@@ -1,0 +1,9 @@
+{
+  "name": "TripleInfusion",
+  "version_number": "1.0.0",
+  "website_url": "https://github.com/kamikaze-skynet/TripleInfusion",
+  "description": "A third infusion for your spells. Once a spell has two elements, a later level-up offers a third: its effect stacks on top of the pair on every hit. Works with MoreWizards.",
+  "dependencies": [
+    "BepInEx-BepInExPack_IL2CPP-6.0.788"
+  ]
+}
