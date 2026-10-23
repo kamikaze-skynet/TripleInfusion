@@ -20,7 +20,7 @@ public class Plugin : BasePlugin
 {
     public const string Guid = "girthy_mods.TripleInfusion";
     public const string Name = "TripleInfusion";
-    public const string Version = "1.1.0";
+    public const string Version = "1.1.1";
 
     internal static new ManualLogSource Log;
 
@@ -47,6 +47,7 @@ public class Plugin : BasePlugin
         var harmony = new Harmony(Guid);
         harmony.PatchAll(typeof(InfusionPatches));
         harmony.PatchAll(typeof(HostSettings));
+        Diagnostics.Install();
         Log.LogInfo($"{Name} {Version} ready.");
     }
 }

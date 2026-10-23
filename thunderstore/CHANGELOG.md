@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.1
+- Fix: more "NotImplementedException" errors with third infusions. Some game code (random element picking) combines elements directly, skipping the path fixed in 1.0.2, so that's covered too.
+- If the game still logs that error, the BepInEx log now shows where it came from (first 5 per session).
+
 ## 1.1.0
 - The host's `[Third Infusion]` settings now apply to everyone in the run (enabled, spell level, repeat elements, choices). Players' own config files are left alone and used again after the run.
 

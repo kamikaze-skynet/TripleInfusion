@@ -200,7 +200,17 @@ internal static class InfusionPatches
 
     [HarmonyPatch(typeof(ElementCombiner), nameof(ElementCombiner.GetElement))]
     [HarmonyPrefix]
-    private static bool GetElement_Prefix(Il2CppList.List<ElementType> elements, ref ElementType __result)
+    private static bool GetElement_Prefix(Il2CppList.List<ElementType> elements, ref ElementType __result) =>
+        Tolerant(elements, ref __result);
+
+    // Some game code (e.g. RandomElementDeterminer) calls GetCombinedElement directly, skipping GetElement.
+    [HarmonyPatch(typeof(ElementCombiner), nameof(ElementCombiner.GetCombinedElement))]
+    [HarmonyPrefix]
+    private static bool GetCombinedElement_Prefix(Il2CppList.List<ElementType> elements, ref ElementType __result) =>
+        Tolerant(elements, ref __result);
+
+    /// <summary>False (with a result) when the list adds up to 3+ base elements; true = let the game handle it.</summary>
+    private static bool Tolerant(Il2CppList.List<ElementType> elements, ref ElementType __result)
     {
         if (combining || elements == null || elements.Count < 2) return true;
         combining = true;
