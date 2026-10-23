@@ -114,9 +114,9 @@ internal static class InfusionPatches
         if (!Plugin.Enabled.Value) return;
         try
         {
-            var spellN = __instance.spell;
-            if (spellN == null || !spellN.HasValue) return;
-            SpellType spell = spellN.Value;
+            // spell is a SpellType? field: read it raw (the interop getter for nullable fields throws).
+            if (!Raw.TryGetNullable4(__instance, "spell", out int spellBits)) return;
+            SpellType spell = (SpellType)spellBits;
             if (!pending.Contains(spell)) return; // not a third-infusion shop
 
             var stats = LocalStats;
@@ -234,7 +234,7 @@ internal static class InfusionPatches
 
     // ---------- reset between runs ----------
 
-    [HarmonyPatch(typeof(RunManager), nameof(RunManager.OnNetworkDespawn))]
+    [HarmonyPatch(typeof(RunManager), nameof(RunManager.OnDestroy))] // RunManager has no OnNetworkDespawn of its own
     [HarmonyPostfix]
     private static void Reset()
     {
