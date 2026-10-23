@@ -181,26 +181,58 @@ internal static class InfusionPatches
         }
     }
 
-    // The shop card's tooltip combines "current elements + new element". With 3 elements vanilla throws
-    // NotImplementedException and the card breaks; answer with the first two (the spell's current pair) instead.
+    // The game combines elements as a list like [current pair, new element], e.g. [FireDouble, Fire] for the
+    // third-infusion shop card, and in other places once a spell has a third element. That's 3 base elements, so
+    // vanilla throws NotImplementedException. If the list adds up to 3+ base elements, answer with the spell's
+    // pair (the first element that is already a pair), else with the first two base elements combined.
     [ThreadStatic] private static bool combining;
+    private static readonly Dictionary<ElementType, List<ElementType>> coreCache = new();
+
+    // Base elements of an element (Fire -> [Fire], FireDouble -> [Fire, Fire]); 20 element types, cached.
+    private static List<ElementType> CachedCores(ElementType e)
+    {
+        if (coreCache.TryGetValue(e, out var c)) return c;
+        c = e == ElementType.None ? new List<ElementType>() : Cores(e);
+        if (c.Count == 0 && e != ElementType.None) c.Add(e);
+        coreCache[e] = c;
+        return c;
+    }
 
     [HarmonyPatch(typeof(ElementCombiner), nameof(ElementCombiner.GetElement))]
     [HarmonyPrefix]
     private static bool GetElement_Prefix(Il2CppList.List<ElementType> elements, ref ElementType __result)
     {
-        if (combining || elements == null || elements.Count < 3) return true;
+        if (combining || elements == null || elements.Count < 2) return true;
         combining = true;
         try
         {
+            // Fast path (runs often): add up base elements from the cache, no allocations.
+            int total = 0;
+            for (int i = 0; i < elements.Count; i++) total += CachedCores(elements[i]).Count;
+            if (total < 3) return true; // vanilla can handle it
+
+            ElementType firstPair = ElementType.None;
+            ElementType c0 = ElementType.None, c1 = ElementType.None;
+            int n = 0;
+            for (int i = 0; i < elements.Count; i++)
+            {
+                var c = CachedCores(elements[i]);
+                if (c.Count >= 2 && firstPair == ElementType.None) firstPair = elements[i];
+                foreach (var core in c) { if (n == 0) c0 = core; else if (n == 1) c1 = core; n++; }
+            }
+            if (firstPair != ElementType.None) { __result = firstPair; return false; }
             var firstTwo = new Il2CppList.List<ElementType>();
-            firstTwo.Add(elements[0]);
-            firstTwo.Add(elements[1]);
+            firstTwo.Add(c0);
+            firstTwo.Add(c1);
             __result = ElementCombiner.GetElement(firstTwo);
+            return false;
         }
-        catch { __result = elements[0]; }
+        catch
+        {
+            __result = elements[0];
+            return false;
+        }
         finally { combining = false; }
-        return false;
     }
 
     // ---------- 4. hit: run the third element's effect after the pair's ----------

@@ -20,7 +20,7 @@ public class Plugin : BasePlugin
 {
     public const string Guid = "girthy_mods.TripleInfusion";
     public const string Name = "TripleInfusion";
-    public const string Version = "1.0.1";
+    public const string Version = "1.0.2";
 
     internal static new ManualLogSource Log;
 
