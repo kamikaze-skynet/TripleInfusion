@@ -20,7 +20,7 @@ public class Plugin : BasePlugin
 {
     public const string Guid = "girthy_mods.TripleInfusion";
     public const string Name = "TripleInfusion";
-    public const string Version = "1.0.2";
+    public const string Version = "1.1.0";
 
     internal static new ManualLogSource Log;
 
@@ -44,7 +44,9 @@ public class Plugin : BasePlugin
             new ConfigDescription("How many elements to choose from in the third infusion shop (vanilla infusion shops offer 2).",
                 new AcceptableValueRange<int>(1, 5)));
 
-        new Harmony(Guid).PatchAll(typeof(InfusionPatches));
+        var harmony = new Harmony(Guid);
+        harmony.PatchAll(typeof(InfusionPatches));
+        harmony.PatchAll(typeof(HostSettings));
         Log.LogInfo($"{Name} {Version} ready.");
     }
 }

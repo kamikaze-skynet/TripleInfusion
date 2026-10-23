@@ -83,7 +83,7 @@ internal static class InfusionPatches
     [HarmonyPostfix]
     private static void ShouldOffer_Postfix(SpellType spell, int spellLevel, ref bool __result)
     {
-        if (__result || !Plugin.Enabled.Value || spellLevel < Plugin.ThirdInfusionLevel.Value) return;
+        if (__result || !HostSettings.Enabled || spellLevel < HostSettings.SpellLevel) return;
         try
         {
             var stats = LocalStats;
@@ -111,7 +111,7 @@ internal static class InfusionPatches
     [HarmonyPostfix]
     private static void Generate_Postfix(InfusionInventoryGenerator __instance, ref Il2CppList.List<StoreItem> __result)
     {
-        if (!Plugin.Enabled.Value) return;
+        if (!HostSettings.Enabled) return;
         try
         {
             // spell is a SpellType? field: read it raw (the interop getter for nullable fields throws).
@@ -132,7 +132,7 @@ internal static class InfusionPatches
                 if (item == null || item.Configuration == null || item.Configuration.SpellType != spell) continue;
                 ElementType e = item.Element;
                 if (Array.IndexOf(CoreElements, e) < 0) continue;                       // base elements only
-                if (!Plugin.AllowRepeatElements.Value && current.Contains(e)) continue;
+                if (!HostSettings.AllowRepeat && current.Contains(e)) continue;
                 if (unlocks != null && unlocks.ContainsKey(e) && !unlocks[e]) continue;  // respect element unlocks
                 if (options.Exists(o => o.TryCast<SpellInfusionItem>().Element == e)) continue;
                 options.Add(allInfusionItems[i]);
@@ -151,7 +151,7 @@ internal static class InfusionPatches
                 (options[i], options[j]) = (options[j], options[i]);
             }
             var result = new Il2CppList.List<StoreItem>();
-            for (int i = 0; i < Math.Min(Plugin.Choices.Value, options.Count); i++) result.Add(options[i]);
+            for (int i = 0; i < Math.Min(HostSettings.Choices, options.Count); i++) result.Add(options[i]);
             __result = result;
         }
         catch (Exception ex) { Plugin.Log.LogError($"Shop: {ex}"); }
@@ -163,7 +163,7 @@ internal static class InfusionPatches
     [HarmonyPrefix]
     private static bool AddInfusion_Prefix(PlayerStats __instance, SpellType spell, ElementType newElement)
     {
-        if (!Plugin.Enabled.Value) return true;
+        if (!HostSettings.Enabled) return true;
         try
         {
             if (CoreCount(__instance.GetElement(spell)) < 2) return true; // 1st or 2nd infusion: vanilla

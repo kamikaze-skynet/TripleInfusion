@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.1.0
+- The host's `[Third Infusion]` settings now apply to everyone in the run (enabled, spell level, repeat elements, choices). Players' own config files are left alone and used again after the run.
+
 ## 1.0.2
 - Fix: once a spell had a third infusion, the game kept throwing "NotImplementedException" (hundreds of times per run in the log). The game also combines a pair with a new element, such as FireDouble + Fire, and that wasn't covered. Any combination that adds up to 3 or more base elements now keeps the spell's pair.
 

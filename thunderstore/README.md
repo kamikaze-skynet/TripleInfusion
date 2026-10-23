@@ -19,6 +19,8 @@ Works with MoreWizards and StarterSpells.
 
 ## Config
 
+**The host's settings apply to everyone.** At the start of each run the host's `[Third Infusion]` settings are sent to all players, so everyone gets the third infusion at the same spell level with the same choices.
+
 In your mod manager's config editor (or `BepInEx/config`), section `[Third Infusion]`:
 
 | Setting | Default | What it does |
