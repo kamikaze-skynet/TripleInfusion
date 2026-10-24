@@ -35,3 +35,7 @@ In your mod manager's config editor (or `BepInEx/config`), section `[Third Infus
 - The spell's look and icon still show the two-element combo. The third element shows in its hits, not its visuals.
 - In the third infusion shop, the card's preview shows the current combo rather than all three elements.
 - The third infusion doesn't count as an "infusion" for artifacts or challenges that track infusions.
+
+## Multiplayer settings
+
+In multiplayer everyone plays with the **host's** settings: the host's config is sent to every player from the lobby on, and the mod reads it instead of yours while you're connected. Your config file is never changed. If the host doesn't have this mod, it stays off for you in that game.

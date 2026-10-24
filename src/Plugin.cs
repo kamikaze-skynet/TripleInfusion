@@ -20,7 +20,7 @@ public class Plugin : BasePlugin
 {
     public const string Guid = "girthy_mods.TripleInfusion";
     public const string Name = "TripleInfusion";
-    public const string Version = "1.1.2";
+    public const string Version = "1.1.3";
 
     internal static new ManualLogSource Log;
 
@@ -32,6 +32,7 @@ public class Plugin : BasePlugin
     public override void Load()
     {
         Log = base.Log;
+        HostConfig.Init(this, Guid, System.Array.Empty<string>(), new System.Collections.Generic.Dictionary<string, string> { ["Third Infusion.Enabled"] = "false" });
 
         Enabled = Config.Bind("Third Infusion", "Enabled", true,
             "Offer a third infusion for spells that already have two elements.");
