@@ -261,15 +261,14 @@ internal static class InfusionPatches
             if (!third.TryGetValue((spellHit.OwnerClientId, spellHit.Spell), out ElementType extra)) return;
             if (targetHealthContainer == null || targetHealthContainer.WasCollected) return;
 
-            ElementType original = damageInfo.Element;
+            // Run the third element on its own copy of the hit. Effects can hold on to the hit and use it later
+            // (lightning ricochets read its element a moment after), so the original must never be changed.
+            var copy = damageInfo.ShallowClone();
+            if (copy == null) return;
+            copy.Element = extra;
             applyingThird = true;
-            damageInfo.Element = extra;
-            try { __instance.Execute(damage, damageInfo, targetHealthContainer); }
-            finally
-            {
-                damageInfo.Element = original;
-                applyingThird = false;
-            }
+            try { __instance.Execute(damage, copy, targetHealthContainer); }
+            finally { applyingThird = false; }
         }
         catch (Exception ex) { Plugin.Log.LogError($"Hit: {ex}"); }
     }

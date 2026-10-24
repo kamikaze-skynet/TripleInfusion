@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.1.2
+- Fix: the remaining "NotImplementedException" errors (found with 1.1.1's logging). They came from lightning ricochets: the third element's effect briefly changed the hit's element, and ricochets read it a moment later when it was back to the pair. The third element now runs on its own copy of the hit.
+
 ## 1.1.1
 - Fix: more "NotImplementedException" errors with third infusions. Some game code (random element picking) combines elements directly, skipping the path fixed in 1.0.2, so that's covered too.
 - If the game still logs that error, the BepInEx log now shows where it came from (first 5 per session).
