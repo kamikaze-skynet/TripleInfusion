@@ -11,7 +11,7 @@ namespace TripleInfusion;
 /// <summary>
 /// The four pieces, each hooked where the game already does the vanilla version:
 ///  1. Offer:  InfusionStoreAvailabilityChecker.InfusionStoreShouldBeOffered (vanilla: spell level 7 / 14).
-///  2. Shop:   InfusionInventoryGenerator.Generate, filled from the game's own infusion items (StoreItemDatabase).
+///  2. Shop:   InfusionInventoryGenerator.Generate, filled from the game's own infusion items (the shop's item database).
 ///  3. Choose: PlayerStats.AddInfusion runs on every player's game when someone infuses (the game broadcasts it).
 ///             Vanilla would combine three elements and throw; we record the third element instead.
 ///  4. Hit:    ElementEffectExecutor.Execute runs the pair's effect; we run the third element's effect after it.
@@ -100,11 +100,19 @@ internal static class InfusionPatches
 
     // ---------- 2. shop ----------
 
-    [HarmonyPatch(typeof(StoreItemDatabase), nameof(StoreItemDatabase.GetSpellInfusionItems))]
-    [HarmonyPostfix]
-    private static void CacheInfusionItems(Il2CppList.List<StoreItem> __result)
+    // The game's infusion items, read from the shop's own item database when a third-infusion shop is built.
+    // (Before 1.1.4 this hooked StoreItemDatabase.GetSpellInfusionItems. In the game's code that getter is one
+    // shared 5-byte function used by ~440 other getters, so the hook ran for all of them, with other objects and
+    // plain numbers passed off as an item list: a crash waiting to happen, and needless work on every call.)
+    private static Il2CppList.List<StoreItem> InfusionItems(InfusionInventoryGenerator gen)
     {
-        if (__result != null && __result.Count > 0) allInfusionItems = __result;
+        try
+        {
+            var list = gen.StoreItemDatabase?.GetSpellInfusionItems();
+            if (list != null && list.Count > 0) allInfusionItems = list;
+        }
+        catch (Exception ex) { Plugin.Log.LogWarning($"Infusion items: {ex.Message}"); }
+        return allInfusionItems;
     }
 
     [HarmonyPatch(typeof(InfusionInventoryGenerator), nameof(InfusionInventoryGenerator.Generate))]
@@ -120,22 +128,23 @@ internal static class InfusionPatches
             if (!pending.Contains(spell)) return; // not a third-infusion shop
 
             var stats = LocalStats;
-            if (stats == null || allInfusionItems == null) return;
+            var items = InfusionItems(__instance);
+            if (stats == null || items == null) return;
             var current = Cores(stats.GetElement(spell));
             if (current.Count < 2) return;
 
             var unlocks = __instance.elementUnlockMap;
             var options = new List<StoreItem>();
-            for (int i = 0; i < allInfusionItems.Count; i++)
+            for (int i = 0; i < items.Count; i++)
             {
-                var item = allInfusionItems[i]?.TryCast<SpellInfusionItem>();
+                var item = items[i]?.TryCast<SpellInfusionItem>();
                 if (item == null || item.Configuration == null || item.Configuration.SpellType != spell) continue;
                 ElementType e = item.Element;
                 if (Array.IndexOf(CoreElements, e) < 0) continue;                       // base elements only
                 if (!HostSettings.AllowRepeat && current.Contains(e)) continue;
                 if (unlocks != null && unlocks.ContainsKey(e) && !unlocks[e]) continue;  // respect element unlocks
                 if (options.Exists(o => o.TryCast<SpellInfusionItem>().Element == e)) continue;
-                options.Add(allInfusionItems[i]);
+                options.Add(items[i]);
             }
             if (options.Count == 0)
             {
@@ -282,5 +291,6 @@ internal static class InfusionPatches
         third.Clear();
         pending.Clear();
         localStats = null;
+        allInfusionItems = null;
     }
 }

@@ -1,7 +1,10 @@
+# Changelog
+
+## 1.1.4
+- **Fix: a possible crash.** To find the game's infusion cards, the mod hooked a tiny function in the game that turns out to be shared by about 440 other parts of the game (they compile to the same code). The hook ran for all of them, treating unrelated data as infusion cards. The mod now reads the cards straight from the shop when it builds a third-infusion shop, and that hook is gone. This also removes a little work the game was doing all the time.
+
 ## 1.1.3
 - **Everyone uses the host's settings.** While you're in someone's game, this mod reads the host's config instead of yours, from the lobby on. Your config file isn't changed, and your own values are back when you leave. If the host doesn't have the mod, it stays off for you in that game.
-
-# Changelog
 
 ## 1.1.2
 - Fix: the remaining "NotImplementedException" errors (found with 1.1.1's logging). They came from lightning ricochets: the third element's effect briefly changed the hit's element, and ricochets read it a moment later when it was back to the pair. The third element now runs on its own copy of the hit.
