@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.5
+- **The third element is always a new one.** The shop only offers elements the spell doesn't have yet: a Fire + Ice spell can add Lightning, Acid or Dark, never Fire or Ice again. The `AllowRepeatElements` setting is gone.
+- If every element you've unlocked is already on the spell, the third infusion isn't offered for it.
+
 ## 1.1.4
 - **Fix: a possible crash.** To find the game's infusion cards, the mod hooked a tiny function in the game that turns out to be shared by about 440 other parts of the game (they compile to the same code). The hook ran for all of them, treating unrelated data as infusion cards. The mod now reads the cards straight from the shop when it builds a third-infusion shop, and that hook is gone. This also removes a little work the game was doing all the time.
 

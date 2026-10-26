@@ -23,7 +23,6 @@ internal static class HostSettings
 
     internal static bool Enabled => synced != null && synced.TryGetValue("Enabled", out var v) && bool.TryParse(v, out var b) ? b : Plugin.Enabled.Value;
     internal static int SpellLevel => Int("SpellLevel", Plugin.ThirdInfusionLevel.Value);
-    internal static bool AllowRepeat => synced != null && synced.TryGetValue("AllowRepeat", out var v) && bool.TryParse(v, out var b) ? b : Plugin.AllowRepeatElements.Value;
     internal static int Choices => Int("Choices", Plugin.Choices.Value);
 
     private static int Int(string key, int local) =>
@@ -83,7 +82,6 @@ internal static class HostSettings
             string payload = string.Join(";",
                 "Enabled=" + Plugin.Enabled.Value,
                 "SpellLevel=" + Plugin.ThirdInfusionLevel.Value.ToString(c),
-                "AllowRepeat=" + Plugin.AllowRepeatElements.Value,
                 "Choices=" + Plugin.Choices.Value.ToString(c));
             var writer = new FastBufferWriter(Encoding.UTF8.GetByteCount(payload) * 2 + 64, Allocator.Temp, -1);
             try

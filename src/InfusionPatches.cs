@@ -77,6 +77,24 @@ internal static class InfusionPatches
     internal static bool TryGetThird(ulong client, SpellType spell, out ElementType element) =>
         third.TryGetValue((client, spell), out element);
 
+    // The game's element unlocks (from any infusion shop it has built), and spells already told there's nothing new.
+    private static Il2CppList.Dictionary<ElementType, bool> unlockMap;
+    private static readonly HashSet<SpellType> noNewElement = new();
+
+    /// <summary>Base elements a spell with these elements could take as its third: never one it already has
+    /// (Fire + Ice can only add Lightning, Acid or Dark), and only ones the game has unlocked.</summary>
+    private static List<ElementType> NewElements(List<ElementType> current)
+    {
+        var list = new List<ElementType>();
+        foreach (var e in CoreElements)
+        {
+            if (current.Contains(e)) continue;
+            try { if (unlockMap != null && unlockMap.ContainsKey(e) && !unlockMap[e]) continue; } catch { }
+            list.Add(e);
+        }
+        return list;
+    }
+
     // ---------- 1. offer ----------
 
     [HarmonyPatch(typeof(InfusionStoreAvailabilityChecker), nameof(InfusionStoreAvailabilityChecker.InfusionStoreShouldBeOffered))]
@@ -90,6 +108,11 @@ internal static class InfusionPatches
             if (stats == null) return;
             if (CoreCount(stats.GetElement(spell)) < 2) return;     // needs both vanilla infusions first
             if (third.ContainsKey((LocalClientId, spell)) || pending.Contains(spell)) return;
+            if (NewElements(Cores(stats.GetElement(spell))).Count == 0)
+            {
+                if (noNewElement.Add(spell)) Plugin.Log.LogInfo($"Third infusion for {spell}: every element you've unlocked is already on it, so there's nothing new to offer.");
+                return;
+            }
 
             pending.Add(spell);
             __result = true;
@@ -123,6 +146,7 @@ internal static class InfusionPatches
         try
         {
             // spell is a SpellType? field: read it raw (the interop getter for nullable fields throws).
+            try { if (__instance.elementUnlockMap != null) unlockMap = __instance.elementUnlockMap; } catch { }
             if (!Raw.TryGetNullable4(__instance, "spell", out int spellBits)) return;
             SpellType spell = (SpellType)spellBits;
             if (!pending.Contains(spell)) return; // not a third-infusion shop
@@ -133,22 +157,20 @@ internal static class InfusionPatches
             var current = Cores(stats.GetElement(spell));
             if (current.Count < 2) return;
 
-            var unlocks = __instance.elementUnlockMap;
+            var allowed = NewElements(current);
             var options = new List<StoreItem>();
             for (int i = 0; i < items.Count; i++)
             {
                 var item = items[i]?.TryCast<SpellInfusionItem>();
                 if (item == null || item.Configuration == null || item.Configuration.SpellType != spell) continue;
                 ElementType e = item.Element;
-                if (Array.IndexOf(CoreElements, e) < 0) continue;                       // base elements only
-                if (!HostSettings.AllowRepeat && current.Contains(e)) continue;
-                if (unlocks != null && unlocks.ContainsKey(e) && !unlocks[e]) continue;  // respect element unlocks
+                if (!allowed.Contains(e)) continue; // a base element the spell doesn't have, and unlocked
                 if (options.Exists(o => o.TryCast<SpellInfusionItem>().Element == e)) continue;
                 options.Add(items[i]);
             }
             if (options.Count == 0)
             {
-                Plugin.Log.LogWarning($"Third infusion for {spell}: no infusion items found, keeping the game's shop.");
+                Plugin.Log.LogWarning($"Third infusion for {spell}: no new element to offer, keeping the game's shop.");
                 pending.Remove(spell);
                 return;
             }
@@ -292,5 +314,7 @@ internal static class InfusionPatches
         pending.Clear();
         localStats = null;
         allInfusionItems = null;
+        unlockMap = null;
+        noNewElement.Clear();
     }
 }

@@ -20,13 +20,12 @@ public class Plugin : BasePlugin
 {
     public const string Guid = "girthy_mods.TripleInfusion";
     public const string Name = "TripleInfusion";
-    public const string Version = "1.1.4";
+    public const string Version = "1.1.5";
 
     internal static new ManualLogSource Log;
 
     internal static ConfigEntry<bool> Enabled;
     internal static ConfigEntry<int> ThirdInfusionLevel;
-    internal static ConfigEntry<bool> AllowRepeatElements;
     internal static ConfigEntry<int> Choices;
 
     public override void Load()
@@ -39,8 +38,6 @@ public class Plugin : BasePlugin
         ThirdInfusionLevel = Config.Bind("Third Infusion", "SpellLevel", 21,
             new ConfigDescription("Spell level for the third infusion (vanilla gives the first at 7 and the second at 14). It's offered at the first level-up at or above this.",
                 new AcceptableValueRange<int>(2, 99)));
-        AllowRepeatElements = Config.Bind("Third Infusion", "AllowRepeatElements", true,
-            "Allow a third element the spell already has (e.g. Fire + Lightning + Fire). Off = only elements the spell doesn't have yet.");
         Choices = Config.Bind("Third Infusion", "Choices", 2,
             new ConfigDescription("How many elements to choose from in the third infusion shop (vanilla infusion shops offer 2).",
                 new AcceptableValueRange<int>(1, 5)));

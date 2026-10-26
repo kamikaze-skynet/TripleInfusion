@@ -6,7 +6,7 @@ In the base game a spell gets an infusion at level 7 and a second one at level 1
 
 ## How it works
 
-- You pick a third element (Fire, Lightning, Acid, Ice or Dark) from the shop, just like a normal infusion.
+- You pick a third element from the shop, just like a normal infusion. It's always one the spell doesn't have yet: a Fire + Ice spell can add Lightning, Acid or Dark.
 - The spell keeps its two-element combo, and the third element's own effect is added **on top** on every hit. For example, Fire + Lightning + Ice burns and shocks like Fire + Lightning, and also chills like Ice.
 - You can pick an element the spell already has (Fire + Lightning + Fire) to double up on it. You can turn this off in the config.
 - Locked elements stay locked: the shop only offers elements you've unlocked.
@@ -27,7 +27,6 @@ In your mod manager's config editor (or `BepInEx/config`), section `[Third Infus
 |---|---|---|
 | Enabled | true | Turn the third infusion on or off. |
 | SpellLevel | 21 | Spell level for the third infusion shop (vanilla infusions are at 7 and 14). It's offered at the first level-up at or above this. |
-| AllowRepeatElements | true | Allow a third element the spell already has. |
 | Choices | 2 | How many elements the shop offers (1–5). |
 
 ## Known limits
