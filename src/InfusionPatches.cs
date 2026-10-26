@@ -74,6 +74,19 @@ internal static class InfusionPatches
         get { try { return NetworkManager.Singleton?.LocalClientId ?? 0UL; } catch { return 0UL; } }
     }
 
+    /// <summary>Is this player's open infusion shop for this spell a third infusion? (With the spell's pair.)</summary>
+    internal static bool IsThirdInfusionShop(SpellType spell, out ElementType pair, out List<ElementType> cores)
+    {
+        pair = ElementType.None;
+        cores = null;
+        if (!pending.Contains(spell)) return false;
+        var stats = LocalStats;
+        if (stats == null) return false;
+        pair = stats.GetElement(spell);
+        cores = Cores(pair);
+        return cores.Count >= 2;
+    }
+
     internal static bool TryGetThird(ulong client, SpellType spell, out ElementType element) =>
         third.TryGetValue((client, spell), out element);
 
@@ -202,7 +215,9 @@ internal static class InfusionPatches
             ulong owner = __instance.OwnerClientId;
             third[(owner, spell)] = newElement;
             if (__instance.IsOwner) pending.Remove(spell);
-            Plugin.Log.LogInfo($"Third infusion: player {owner} {spell} + {newElement} (now {__instance.GetElement(spell)} + {newElement}).");
+            var pairNow = __instance.GetElement(spell);
+            string name = Names.NameFor(Cores(pairNow), newElement);
+            Plugin.Log.LogInfo($"Third infusion: player {owner} {spell} + {newElement} (now {pairNow} + {newElement}{(name != null ? $" = {name}" : "")}).");
             return false; // keep the pair as the spell's element
         }
         catch (Exception ex)

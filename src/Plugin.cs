@@ -20,7 +20,7 @@ public class Plugin : BasePlugin
 {
     public const string Guid = "girthy_mods.TripleInfusion";
     public const string Name = "TripleInfusion";
-    public const string Version = "1.1.5";
+    public const string Version = "1.1.6";
 
     internal static new ManualLogSource Log;
 
@@ -45,6 +45,7 @@ public class Plugin : BasePlugin
         var harmony = new Harmony(Guid);
         harmony.PatchAll(typeof(InfusionPatches));
         harmony.PatchAll(typeof(HostSettings));
+        try { harmony.PatchAll(typeof(Names)); } catch (System.Exception ex) { Log.LogWarning($"Third infusion card text unavailable: {ex.Message}"); }
         Diagnostics.Install();
         Log.LogInfo($"{Name} {Version} ready.");
     }

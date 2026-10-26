@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.1.6
+- **Three-element spells have their own names**, and the third-infusion card says what all three parts do. Instead of "Infuse this Corrosion Spell with Ice to make Corrosion", it reads "...to make **Rimeblight**", followed by what Corrosion does and what the added Ice does. There are 30 names, one for each mix of three elements (see the README).
+
 ## 1.1.5
 - **The third element is always a new one.** The shop only offers elements the spell doesn't have yet: a Fire + Ice spell can add Lightning, Acid or Dark, never Fire or Ice again. The `AllowRepeatElements` setting is gone.
 - If every element you've unlocked is already on the spell, the third infusion isn't offered for it.

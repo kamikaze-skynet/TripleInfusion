@@ -17,6 +17,28 @@ In the base game a spell gets an infusion at level 7 and a second one at level 1
 
 Works with MoreWizards and StarterSpells.
 
+## Three-element names
+
+The third-infusion card names the result and lists what each part does. The name depends only on the three elements, in any order.
+
+| Elements | Name | | Elements | Name |
+|---|---|---|---|---|
+| Fire + Lightning + Acid | Cataclysm | | Fire + Fire + Lightning | Firestorm |
+| Fire + Lightning + Ice | Tempest | | Fire + Fire + Acid | Magma |
+| Fire + Lightning + Dark | Doomstorm | | Fire + Fire + Ice | Steamburst |
+| Fire + Acid + Ice | Calamity | | Fire + Fire + Dark | Hellblaze |
+| Fire + Acid + Dark | Pandemonium | | Lightning + Lightning + Fire | Sunstrike |
+| Fire + Ice + Dark | Eclipse | | Lightning + Lightning + Acid | Acid Rain |
+| Lightning + Acid + Ice | Maelstrom | | Lightning + Lightning + Ice | Blizzard |
+| Lightning + Acid + Dark | Scourge | | Lightning + Lightning + Dark | Nightstorm |
+| Lightning + Ice + Dark | Oblivion | | Acid + Acid + Fire | Meltdown |
+| Acid + Ice + Dark | Pestilence | | Acid + Acid + Lightning | Overload |
+| Ice + Ice + Fire | Shatter | | Acid + Acid + Ice | Rimeblight |
+| Ice + Ice + Lightning | Hailstorm | | Acid + Acid + Dark | Plague |
+| Ice + Ice + Acid | Black Ice | | Dark + Dark + Fire | Abyssfire |
+| Ice + Ice + Dark | Grave Frost | | Dark + Dark + Lightning | Voidstorm |
+| Dark + Dark + Acid | Decay | | Dark + Dark + Ice | Deathchill |
+
 ## Config
 
 **The host's settings apply to everyone.** At the start of each run the host's `[Third Infusion]` settings are sent to all players, so everyone gets the third infusion at the same spell level with the same choices.
@@ -32,7 +54,7 @@ In your mod manager's config editor (or `BepInEx/config`), section `[Third Infus
 ## Known limits
 
 - The spell's look and icon still show the two-element combo. The third element shows in its hits, not its visuals.
-- In the third infusion shop, the card's preview shows the current combo rather than all three elements.
+- In the third infusion shop, the card's picture (its frame and icon) shows the current combo; the three-element name is in the card's text.
 - The third infusion doesn't count as an "infusion" for artifacts or challenges that track infusions.
 
 ## Multiplayer settings
